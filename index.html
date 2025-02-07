@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload para S3</title>
+</head>
+<body>
+    <h2>Selecione um arquivo para enviar ao S3</h2>
+    
+    <input type="file" id="fileInput">
+    <button id="uploadButton">Enviar para S3</button>
+    <button id="listFilesButton" style="margin: 10px;">Listar Arquivos</button>
+
+    <h3>Arquivos no S3:</h3> 
+    <ul id="fileList"></ul> 
+ 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1359.0/aws-sdk.min.js"></script>
+    <script src="up.js"></script>
+</body>
+</html>
