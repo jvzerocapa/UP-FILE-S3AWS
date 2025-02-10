@@ -2,13 +2,12 @@
 AWS.config.update({
     accessKeyId: "AKIAYQNJSUDTUAHNAZAL",
     secretAccessKey: "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",
-    region: "sa-east-1" 
+    region: "sa-east-1"
 });
-
-
 
 // Criar instância do S3
 const s3 = new AWS.S3();
+const bucketName = "testeadpv2";
 
 document.getElementById("uploadButton").addEventListener("click", () => {
     const fileInput = document.getElementById("fileInput");
@@ -22,14 +21,14 @@ document.getElementById("uploadButton").addEventListener("click", () => {
     uploadFile(file);
 });
 
-document.getElementById("listFilesButton").addEventListener("click", listFiles);
+document.getElementById("viewAllFilesButton").addEventListener("click", displayFilesOnPage);
 
 function uploadFile(file) {
     const params = {
-        Bucket: "testeadpv2", 
-        Key: file.name,       
-        Body: file,           
-        ACL: "public-read"    
+        Bucket: bucketName,
+        Key: file.name,
+        Body: file,
+        ACL: "public-read"
     };
 
     s3.upload(params, (err, data) => {
@@ -39,13 +38,14 @@ function uploadFile(file) {
         } else {
             console.log("Upload bem-sucedido! URL:", data.Location);
             alert("Arquivo enviado com sucesso!\n" + data.Location);
+            displayFilesOnPage(); // Atualiza a lista após upload
         }
     });
 }
 
-function listFiles() {
+function displayFilesOnPage() {
     const params = {
-        Bucket: "testeadpv2" 
+        Bucket: bucketName
     };
 
     s3.listObjectsV2(params, (err, data) => {
@@ -53,23 +53,40 @@ function listFiles() {
             console.error("Erro ao listar arquivos:", err);
             alert("Erro ao listar arquivos.");
         } else {
-            const fileList = document.getElementById("fileList");
-            fileList.innerHTML = ""; 
+            const fileDisplay = document.getElementById("fileDisplay");
+            fileDisplay.innerHTML = ""; // Limpa antes de atualizar
+
+            if (data.Contents.length === 0) {
+                fileDisplay.innerHTML = "<p>Nenhum arquivo encontrado.</p>";
+                return;
+            }
 
             data.Contents.forEach(file => {
-                const fileUrl = `https://${params.Bucket}.s3.amazonaws.com/${file.Key}`;
-                const listItem = document.createElement("li");
-                const link = document.createElement("a");
+                const fileUrl = `https://${bucketName}.s3.amazonaws.com/${file.Key}`;
+                const fileElement = document.createElement("div");
+                fileElement.style.marginBottom = "10px";
 
-                link.href = fileUrl;
-                link.textContent = file.Key;
-                link.target = "_blank";
+                if (file.Key.match(/\.(jpeg|jpg|png|gif|webp)$/i)) {
+                    // Exibe imagens na página
+                    const img = document.createElement("img");
+                    img.src = fileUrl;
+                    img.alt = file.Key;
+                    img.style.maxWidth = "200px";
+                    img.style.display = "block";
+                    fileElement.appendChild(img);
+                } else {
+                    // Exibe link para outros arquivos
+                    const link = document.createElement("a");
+                    link.href = fileUrl;
+                    link.textContent = file.Key;
+                    link.target = "_blank";
+                    fileElement.appendChild(link);
+                }
 
-                listItem.appendChild(link);
-                fileList.appendChild(listItem);
+                fileDisplay.appendChild(fileElement);
             });
 
-            console.log("Arquivos listados com sucesso!", data.Contents);
+            console.log("Arquivos exibidos com sucesso!", data.Contents);
         }
     });
 }
