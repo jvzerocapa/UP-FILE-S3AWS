@@ -1,13 +1,13 @@
 
 AWS.config.update({
-    accessKeyId: "AKIAYQNJSUDTUAHNAZAL",
-    secretAccessKey: "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",
+    accessKeyId: "accesKeyAqui",
+    secretAccessKey: "SenhadaAccesKeyAqui",
     region: "sa-east-1"
 });
 
 // Criar instância do S3
 const s3 = new AWS.S3();
-const bucketName = "testeadpv2";
+const bucketName = "NomeDoBucketAqui";
 
 document.getElementById("uploadButton").addEventListener("click", () => {
     const fileInput = document.getElementById("fileInput");
